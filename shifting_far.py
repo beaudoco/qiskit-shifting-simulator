@@ -1,43 +1,52 @@
-## Imports
+# Imports
 
 from qiskit import *
 import argparse
 from qiskit.test.mock import FakeAlmaden, FakeVigo, FakeValencia, FakeMelbourne, FakeTokyo
 #from qiskit.providers.aer import QasmSimulator
 from qiskit import Aer
+from qiskit.tools import job_monitor  # import
 import os
 import random
-import qiskit.transpiler.coupling as coupling 
+import qiskit.transpiler.coupling as coupling
 #from qiskit.providers.aer.noise import NoiseModel
-#import qiskit.providers.aer.noise as noise 
+#import qiskit.providers.aer.noise as noise
 import matplotlib.pyplot as plt
 from qiskit.test.mock import FakeVigo, FakeMelbourne, FakeAlmaden, FakeValencia, FakeTokyo, FakeMelbourne
-import networkx as nx 
+import networkx as nx
 import collections
 import random
 import openpyxl as xl
 from tqdm import tqdm
 import time
 
-## Loading account and backend
+# Loading account and backend
 
-QX_TOKEN = "67313723797a8e1e5905db1cd035fe6918ea028b47a6ab963058182756fbfc7f6b72e92b21c668900e83e60d206de10aec97751d91ef74de7fde33f31e4b4e58"
-provider = IBMQ.enable_account(QX_TOKEN)
+#QX_TOKEN = "67313723797a8e1e5905db1cd035fe6918ea028b47a6ab963058182756fbfc7f6b72e92b21c668900e83e60d206de10aec97751d91ef74de7fde33f31e4b4e58"
+#provider = IBMQ.enable_account(QX_TOKEN)
+QX_TOKEN = "929e8951d2081e9da2d290c48fc02a9cbd264affbcfc9669a63af613b630a8d545a504adf27d70a6650bf17dfea2fae9400895cb2f0f9f2e4c68466654505723"
 
-## Get Coupling map of Melbourne
+IBMQ.enable_account(QX_TOKEN)
+provider = IBMQ.get_provider(
+    hub='ibm-q-research', group='penn-3', project='main')
 
-backend = FakeMelbourne()
-edges = backend.configuration().coupling_map
+# Get Coupling map of Melbourne
 
-### Chose the backend
-
-backend = Aer.get_backend("qasm_simulator") 
 #backend = provider.get_backend('ibmq_16_melbourne')
+#backend = Aer.get_backend("ibmq_16_melbourne")
+#backend = FakeMelbourne()
+#edges = backend.configuration().coupling_map
+
+# Chose the backend
+
+#backend = Aer.get_backend("qasm_simulator")
+#backend = provider.get_backend('ibmq_16_melbourne')
+backend = provider.get_backend('ibmq_bogota')
 # backend = FakeMelbourne()
 
-## Initializing the Quantum Circuit
+# Initializing the Quantum Circuit
 
-qr = QuantumRegister(14, 'q')
+qr = QuantumRegister(5, 'q')
 # anc = QuantumRegister(2, 'ancilla')
 cr = ClassicalRegister(4, 'c')
 qc = QuantumCircuit(qr, cr)
@@ -45,40 +54,56 @@ qc = QuantumCircuit(qr, cr)
 # qc.x(qr[2])
 # qc.x(qr[11])
 
-for i in range(50):
-    qc.cx(qr[2], qr[12])
-    qc.barrier(qr[2], qr[12])
-    
-qc.measure(qr[2], cr[0])
-qc.measure(qr[12], cr[1])
+num_gates = 50
 
-for i in range(25):
-    qc.cx(qr[3], qr[11])
-    qc.barrier(qr[3], qr[11])
+q1, q2 = 2, 3
 
-qc.swap(qr[3], qr[4])
-qc.swap(qr[11], qr[10])
+for i in range(num_gates):
 
-for i in range(25):
-    qc.cx(qr[4], qr[10])
-    qc.barrier(qr[4], qr[10])
+    if i == num_gates//2:
 
-qc.measure(qr[4], cr[2])
-qc.measure(qr[10], cr[3])
+        qc.swap(qr[3], qr[4])
 
-qc.draw(output='mpl')
+        qc.swap(qr[2], qr[3])
 
-## Executing the Quantum Circuit on a Hardware
+        q1, q2 = 3, 4
 
-max_experiments = 5
+        qc.barrier()
+
+    qc.cx(qr[0], qr[1])
+
+    qc.cx(qr[q1], qr[q2])
+
+    qc.barrier()
+
+
+qc.measure(qr[0], cr[0])
+
+qc.measure(qr[1], cr[1])
+
+qc.measure(qr[q1], cr[2])
+
+qc.measure(qr[q2], cr[3])
+
+
+# print(qc)
+
+# exit()
+# qc.draw(output='mpl')
+
+# Executing the Quantum Circuit on a Hardware
+
+max_experiments = 75
 circ_list = [qc for i in range(max_experiments)]
 # job = execute(circ_list, backend, shots=1024)
 job = execute(circ_list, backend, shots=8192)
+job_monitor(job)  # the line
+
 result = job.result()
 
 t = time.time()
 
-## Save the results in an Excel File
+# Save the results in an Excel File
 
 row2 = list(result.get_counts(1).keys())
 file_counts = open("counts_{}_far.txt".format(backend), "a")
@@ -93,7 +118,7 @@ if not os.path.exists("melbourne_far.xlsx"):
 
     ws.append(row)
 else:
-    wb = xl.load_workbook(filename = "melbourne_far.xlsx")
+    wb = xl.load_workbook(filename="melbourne_far.xlsx")
     ws = wb.active
 
 
@@ -112,7 +137,7 @@ for k in tqdm(range(max_experiments)):
         row.append(val[row2[i]])
     row.insert(0, str(backend))
     row.insert(0, t)
-    ws.append(row)     
+    ws.append(row)
 
 wb.save("melbourne_far.xlsx")
-file_counts.close()   
+file_counts.close()
