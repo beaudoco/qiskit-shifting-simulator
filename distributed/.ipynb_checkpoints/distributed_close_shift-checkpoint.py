@@ -7,10 +7,10 @@ from copy import deepcopy
 
 ## Loading account and backend
 
-QX_TOKEN = "67313723797a8e1e5905db1cd035fe6918ea028b47a6ab963058182756fbfc7f6b72e92b21c668900e83e60d206de10aec97751d91ef74de7fde33f31e4b4e58"
+QX_TOKEN = "929e8951d2081e9da2d290c48fc02a9cbd264affbcfc9669a63af613b630a8d545a504adf27d70a6650bf17dfea2fae9400895cb2f0f9f2e4c68466654505723"
 
 IBMQ.enable_account(QX_TOKEN)
-provider = IBMQ.get_provider(hub='ibm-q-research', group='penn-state-1', project='main')
+provider = IBMQ.get_provider(hub='ibm-q-research', group='penn-3', project='main')
 
 # QX_TOKEN = "67313723797a8e1e5905db1cd035fe6918ea028b47a6ab963058182756fbfc7f6b72e92b21c668900e83e60d206de10aec97751d91ef74de7fde33f31e4b4e58"
 # provider = IBMQ.enable_account(QX_TOKEN)
@@ -46,7 +46,7 @@ qc_close_p2.measure(qr[3], cr[1])
 
 ## Executing the Quantum Circuit on a Hardware
 
-max_experiments = 37
+max_experiments = 74
 circ_list = []
 for i in range(max_experiments):
     circ_list.append(qc_close)
@@ -77,22 +77,3 @@ else:
     wb = xl.load_workbook(filename = "distributed_shots_close.xlsx")
     ws = wb.active
     
-for k in tqdm(range(max_experiments)):
-    print("*************************************************** \
-        ***************************************************")
-    print("Circuit Index {} {}".format(k, backend), result.get_counts(k))
-    print("*************************************************** \
-        ***************************************************")
-
-    file_counts.write("{};{};{}\n".format(t, backend, result.get_counts(k)))
-
-    val = result.get_counts(k)
-    row = []
-    for i in range(len(row2)):
-        row.append(val[row2[i]])
-    row.insert(0, str(backend))
-    row.insert(0, t)
-    ws.append(row)     
-
-wb.save("distributed_shots_close.xlsx")
-file_counts.close()   
