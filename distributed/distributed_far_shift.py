@@ -18,7 +18,7 @@ provider = IBMQ.get_provider(hub='ibm-q-research', group='penn-state-1', project
 
 ### Chose the backend
 
-backend = provider.get_backend('ibmq_rome')
+backend = provider.get_backend('ibmq_athens')
 # backend = FakeMelbourne()
 # backend = Aer.get_backend("qasm_simulator") 
 
@@ -100,7 +100,7 @@ else:
     wb = xl.load_workbook(filename = "distributed_shots_far.xlsx")
     ws = wb.active
     
-for k in tqdm(range(max_experiments)):
+for k in tqdm(range(max_experiments * 4)):
     print("*************************************************** \
         ***************************************************")
     print("Circuit Index {} {}".format(k, backend), result.get_counts(k))
