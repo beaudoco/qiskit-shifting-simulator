@@ -29,7 +29,7 @@ cr = ClassicalRegister(2, 'c')
 qc_close = QuantumCircuit(qr, cr)
 qc_far = QuantumCircuit(qr, cr)
 
-num_gates = 50 # change this line
+num_gates = 20 # change this line
 q1, q2 = 3, 4
 for i in range(num_gates):
     # prepare close 
