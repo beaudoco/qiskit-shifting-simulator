@@ -18,7 +18,7 @@ provider = IBMQ.get_provider(
 
 # Chose the backend
 
-backend = provider.get_backend('ibmq_manila')
+backend = provider.get_backend('ibmq_athens')
 # backend = FakeMelbourne()
 # backend = Aer.get_backend("qasm_simulator")
 
