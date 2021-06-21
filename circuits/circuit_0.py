@@ -182,7 +182,7 @@ else:
     wb = xl.load_workbook(filename="circuit_0.xlsx")
     ws = wb.active
 
-for k in tqdm(range(max_experiments * 2)):
+for k in tqdm(range(max_experiments * 10)):
     print("*************************************************** \
         ***************************************************")
     print("Circuit Index {} {}".format(k, backend), result.get_counts(k))
