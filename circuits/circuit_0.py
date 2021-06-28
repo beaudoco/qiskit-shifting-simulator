@@ -38,8 +38,8 @@ qc_8_close = QuantumCircuit(qr, cr)
 qc_9 = QuantumCircuit(qr, cr)
 
 num_gates = 50  # change this line
-for i in range(num_gates):
-    q1, q2 = 2, 3
+q1, q2 = 2, 3
+for i in range(num_gates):    
 
     # prepare close 0
     qc_0.cx(qr[0], qr[1])
