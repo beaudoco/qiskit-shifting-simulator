@@ -18,7 +18,7 @@ provider = IBMQ.get_provider(
 
 # Chose the backend
 
-backend = provider.get_backend('ibmq_athens')
+backend = provider.get_backend('ibmq_manila')
 # backend = FakeMelbourne()
 # backend = Aer.get_backend("qasm_simulator")
 
@@ -169,7 +169,7 @@ t = time.time()
 row2 = list(result.get_counts(1).keys())
 file_counts = open("circuit_0_{}_{}.txt".format(num_gates, backend), "a")
 
-if not os.path.exists("circuit_0.xlsx"):
+if not os.path.exists("circuit_0_manila.xlsx"):
     wb = xl.Workbook()
     ws = wb.active
 
@@ -179,7 +179,7 @@ if not os.path.exists("circuit_0.xlsx"):
 
     ws.append(row)
 else:
-    wb = xl.load_workbook(filename="circuit_0.xlsx")
+    wb = xl.load_workbook(filename="circuit_0_manila.xlsx")
     ws = wb.active
 
 for k in tqdm(range(max_experiments * 10)):
@@ -199,5 +199,5 @@ for k in tqdm(range(max_experiments * 10)):
     row.insert(0, t)
     ws.append(row)
 
-wb.save("circuit_0.xlsx")
+wb.save("circuit_0_manila.xlsx")
 file_counts.close()
